@@ -212,7 +212,7 @@ if __name__ == '__main__':
     parser.add_argument('--transform', default=False, action='store_true')
 
     args = parser.parse_args()
-    rdir = f'{args.model}_{si_prefix.si_format(args.tracked)}_{time.asctime().replace(" ", "-")}'
+    rdir = f'{args.model}_{si_prefix.si_format(args.tracked).strip()}_{time.asctime().replace(" ", "-")}'
     try:
         os.makedirs(rdir)
     except Exception as e:
