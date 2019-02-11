@@ -125,6 +125,7 @@ def run_training(
     #Init model
     x = net.xp.random.randn(1, 3, 32, 32).astype(np.float32)
     net(x)
+    print("Ran network once")
     net = L.Classifier(net)
     # Optimizer
     if momentum:
