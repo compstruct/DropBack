@@ -7,3 +7,4 @@ scikit-image
 sklearn
 numpy
 opencv-python
+si-prefix

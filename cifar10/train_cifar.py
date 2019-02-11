@@ -28,6 +28,8 @@ from chainercv import transforms
 from skimage import transform as skimage_transform
 from chainer.training.triggers import EarlyStoppingTrigger
 from chainer import serializers
+import si_prefix
+import json
 
 from cifar10 import densenet
 from cifar10 import wrn
@@ -200,7 +202,6 @@ if __name__ == '__main__':
     parser.add_argument('--decay_init', default=False, action='store_true')
     parser.add_argument('--delay_lr', default=False, action='store_true')
     parser.add_argument('--tracked', type=int, default=0)
-    parser.add_argument('--rdir', default='results')
     parser.add_argument('--freeze', default=0, type=int)
 
     # Data augmentation settings
@@ -211,11 +212,14 @@ if __name__ == '__main__':
     parser.add_argument('--transform', default=False, action='store_true')
 
     args = parser.parse_args()
+    rdir = f'{args.model}_{si_prefix.si_format(args.tracked)}_{time.asctime().replace(" ", "-")}'
     try:
-        os.makedirs(args.rdir)
+        os.makedirs(rdir)
     except Exception as e:
         pass
-
+    finally:
+        with open(os.path.join(rdir, 'args.json'), 'w') as arg_log:
+            json.dump(list( args.items()), arg_log)
     # Set the random seeds
     random.seed(args.seed)
     np.random.seed(args.seed)
