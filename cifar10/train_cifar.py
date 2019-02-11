@@ -124,7 +124,7 @@ def run_training(
 
     #Init model
     if devices > 0:
-        import cupy as xp
+        xp = chainer.cuda
     else:
         xp = np
     x = xp.random.randn(1, 3, 32, 32).astype(np.float32)
