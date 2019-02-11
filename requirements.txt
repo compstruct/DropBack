@@ -1,0 +1,9 @@
+chainer
+chainercv
+matplotlib
+seaborn 
+scikit-learn
+scikit-image
+sklearn
+numpy
+opencv-python

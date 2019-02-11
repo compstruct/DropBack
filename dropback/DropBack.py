@@ -26,7 +26,6 @@ class DropBack(chainer.training.StandardUpdater):
         :param optimizer: The optimizer
         :param output_dir: Directory to output data to (init params, stats...)
         :param converter: Chainer dataset converter
-        :param device: The GPU to use, or CPU if < 0
         :param tracked_size: The number of params to track
         :param freeze: Epoch to freeze the tracked selection on
         :param decay_init: True/False: Decay the initial parameters every iteration
@@ -35,7 +34,6 @@ class DropBack(chainer.training.StandardUpdater):
         super(DropBack, self).__init__(train, optimizer, converter=converter, device=device, **kwargs)
         self.opt = self.get_optimizer('main')
         self.tracked_size = tracked_size
-        self.gpu = True if device != -1 else False
         self.first_iter = True
         self.init_params = []
         self.output_dir = output_dir
@@ -50,6 +48,8 @@ class DropBack(chainer.training.StandardUpdater):
         self.use_freeze = freeze
         self.frozen_masks = [None]
         self.decay_init = decay_init
+        self.track = 100
+        self.xp = cuda.get_array_module(next(self.opt.target.params()))
 
     def update(self):
         """
@@ -63,11 +63,7 @@ class DropBack(chainer.training.StandardUpdater):
         algorithm.
         :return:
         """
-        super(DropBack, self).update()
-        xp = cuda.get_array_module(next(self.opt.target.params()))
-        if self.decay_init and not self.first_iter:
-            for i, _ in enumerate(self.init_params):
-                self.init_params[i] = self.init_params[i]*.90
+        xp = self.xp
         if self.first_iter:
             self.first_iter = False
             self.params = [i for i in self.opt.target.params()]
@@ -79,6 +75,11 @@ class DropBack(chainer.training.StandardUpdater):
                     self.init_params)
             if self.tracked_size:
                 self.frozen_masks = [None] * len(self.params)
+        super(DropBack, self).update()
+
+        if self.decay_init and not self.first_iter:
+            for i, _ in enumerate(self.init_params):
+                self.init_params[i] = self.init_params[i]*.90
         if self.tracked_size:
             if not self.freeze:
                 abs_values = []
@@ -109,12 +110,17 @@ class DropBack(chainer.training.StandardUpdater):
                 total_sum = sum([xp.count_nonzero(p.data != self.init_params[i]) for i, p in enumerate(self.params)])
                 print("********\n\n Total non zero is: {}\n\n1*********".format(total_sum))
                 assert total_sum <= self.tracked_size * 1.1
+            if self.track:
+                if self.iteration-1 % 100 == 0:
+                    flat_now = xp.concatenate([i.array.ravel() for i in self.params])
+                    flat_0 = xp.concatenate([i.ravel() for i in self.init_params])
+                    xp.savez(os.path.join(self.output_dir, f'l2_{self.iteration-1}'), xp.linalg.norm(flat_now - flat_0))
+                    xp.savez(os.path.join(self.output_dir, f'param_hist_{self.iteration-1}'), xp.concatenate([i.array.ravel() for i in self.params if i.name == 'b' or i.name == 'W']))
 
     def serialize(self, serializer):
         super(DropBack, self).serialize(serializer)
         self.opt = serializer('opt', self.get_optimizer('main'))
         self.tracked_size = serializer('max_cache', self.tracked_size)
-        self.gpu = serializer('gpu', self.gpu)
         self.first_iter = serializer('first_iter', self.first_iter)
         self.init_params = serializer('init_params', self.init_params)
         self.output_dir = serializer('output_dir', self.output_dir)
