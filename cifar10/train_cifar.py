@@ -123,7 +123,11 @@ def run_training(
     test_iter = iterators.SerialIterator(valid, batchsize, repeat=False, shuffle=False)
 
     #Init model
-    x = np.random.randn(1, 3, 32, 32).astype(np.float32)
+    if devices > 0:
+        import cupy as xp
+    else:
+        xp = np
+    x = xp.random.randn(1, 3, 32, 32).astype(np.float32)
     net(x)
     net = L.Classifier(net)
     # Optimizer
