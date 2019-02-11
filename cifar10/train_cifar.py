@@ -257,12 +257,12 @@ if __name__ == '__main__':
         valid = TransformDataset(valid, valid_transform)
 
     run_training(
-        net, train, valid, args.rdir, args.batchsize, args.gpu,
+        net, train, valid, rdir, args.batchsize, args.gpu,
         args.training_epoch, args.initial_lr, args.lr_decay_rate,
         args.lr_decay_epoch, weight_decay=args.weight_decay,
         tracked=args.tracked, freeze=args.freeze, momentum=args.momentum,
         decay_init=args.decay_init, delay_lr=args.delay_lr, use_pruning=args.use_pruning)
     try:
-        serializers.save_npz(os.path.join(args.rdir, 'wrn.model'), net)
+        serializers.save_npz(os.path.join(rdir, 'cifar10.model'), net)
     except Exception as e:
         pass

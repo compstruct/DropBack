@@ -110,12 +110,12 @@ class DropBack(chainer.training.StandardUpdater):
                 total_sum = sum([xp.count_nonzero(p.data != self.init_params[i]) for i, p in enumerate(self.params)])
                 print("********\n\n Total non zero is: {}\n\n1*********".format(total_sum))
                 assert total_sum <= self.tracked_size * 1.1
-            if self.track:
-                if self.iteration-1 % 100 == 0:
-                    flat_now = xp.concatenate([i.array.ravel() for i in self.params])
-                    flat_0 = xp.concatenate([i.ravel() for i in self.init_params])
-                    xp.savez(os.path.join(self.output_dir, f'l2_{self.iteration-1}'), xp.linalg.norm(flat_now - flat_0))
-                    xp.savez(os.path.join(self.output_dir, f'param_hist_{self.iteration-1}'), xp.concatenate([i.array.ravel() for i in self.params if i.name == 'b' or i.name == 'W']))
+        if self.track:
+            if self.iteration-1 % 100 == 0:
+                flat_now = xp.concatenate([i.array.ravel() for i in self.params])
+                flat_0 = xp.concatenate([i.ravel() for i in self.init_params])
+                xp.savez(os.path.join(self.output_dir, f'l2_{self.iteration-1}'), xp.linalg.norm(flat_now - flat_0))
+                xp.savez(os.path.join(self.output_dir, f'param_hist_{self.iteration-1}'), xp.concatenate([i.array.ravel() for i in self.params if i.name == 'b' or i.name == 'W']))
 
     def serialize(self, serializer):
         super(DropBack, self).serialize(serializer)
