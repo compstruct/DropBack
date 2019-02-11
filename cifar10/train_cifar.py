@@ -219,7 +219,7 @@ if __name__ == '__main__':
         pass
     finally:
         with open(os.path.join(rdir, 'args.json'), 'w') as arg_log:
-            json.dump(list( args.items()), arg_log)
+            json.dump(vars(args), arg_log)
     # Set the random seeds
     random.seed(args.seed)
     np.random.seed(args.seed)
