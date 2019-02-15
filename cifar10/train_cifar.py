@@ -214,7 +214,9 @@ if __name__ == '__main__':
     parser.add_argument('--transform', default=False, action='store_true')
 
     args = parser.parse_args()
-    rdir = f'{args.model}_{si_prefix.si_format(args.tracked).strip()}_{args.extra}'
+    rdir = f'{args.model}_{si_prefix.si_format(args.tracked, format_str="{value}{prefix}").strip()}'
+    if args.extra:
+        rdir += '_{args.extra}'
     try:
         os.makedirs(rdir)
     except Exception as e:
