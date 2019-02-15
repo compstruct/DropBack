@@ -194,9 +194,9 @@ if __name__ == '__main__':
     # Train settings
     parser.add_argument('--batchsize', type=int, default=64)
     parser.add_argument('--training_epoch', type=int, default=500)
-    parser.add_argument('--initial_lr', type=float, default=0.05)
-    parser.add_argument('--lr_decay_rate', type=float, default=0.5)
-    parser.add_argument('--lr_decay_epoch', type=float, default=25)
+    parser.add_argument('--initial_lr', type=float, default=0.4)
+    parser.add_argument('--lr_decay_rate', type=float, default=0.8)
+    parser.add_argument('--lr_decay_epoch', type=float, default=30)
     parser.add_argument('--weight_decay', type=float, default=0.0005)
     parser.add_argument('--model', default='vgg', choices=['vgg', 'wrn', 'densenet', 'vgg_vd'])
     parser.add_argument('--use_pruning', default=False, action='store_true')

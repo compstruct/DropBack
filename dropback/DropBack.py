@@ -131,4 +131,3 @@ class DropBack(chainer.training.StandardUpdater):
         self.use_freeze = serializer('use_freeze', self.use_freeze)
         self.frozen_masks = serializer('frozen_masks', self.frozen_masks)
         self.decay_init = serializer('decay_init', self.decay_init)
-        self.fired_assert = serializer('fired_assert', self.fired_assert)
