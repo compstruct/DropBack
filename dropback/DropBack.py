@@ -48,7 +48,7 @@ class DropBack(chainer.training.StandardUpdater):
         self.use_freeze = freeze
         self.frozen_masks = [None]
         self.decay_init = decay_init
-        self.track = 100
+        self.track = True
         self.xp = cuda.get_array_module(next(self.opt.target.params()))
 
     def update(self):
@@ -111,7 +111,7 @@ class DropBack(chainer.training.StandardUpdater):
                 print("********\n\n Total non zero is: {}\n\n1*********".format(total_sum))
                 assert total_sum <= self.tracked_size * 1.1
         if self.track:
-            if self.iteration-1 % 100 == 0:
+            if (self.iteration-1) % 100 == 0:
                 flat_now = xp.concatenate([i.array.ravel() for i in self.params])
                 flat_0 = xp.concatenate([i.ravel() for i in self.init_params])
                 xp.savez(os.path.join(self.output_dir, f'l2_{self.iteration-1}'), xp.linalg.norm(flat_now - flat_0))
