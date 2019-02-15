@@ -28,19 +28,9 @@ class Block(chainer.Chain):
 
     def __init__(self, out_channels, ksize, pad=1, xorshift=False, in_channels=None):
         super(Block, self).__init__()
-        if xorshift:
-            # Trash hack
-            import os, sys
-            parentPath = os.path.abspath("..")
-            if parentPath not in sys.path:
-                sys.path.insert(0, parentPath)
-            import CacheSGD
-            initW = CacheSGD.LeCunNormalDet()
-        else:
-            initW = None
         with self.init_scope():
             self.conv = L.Convolution2D(in_channels, out_channels, ksize, pad=pad,
-                                        nobias=True, initialW=initW)
+                                        nobias=True)
             self.bn = L.BatchNormalization(out_channels, eps=1e-3)
         self.acts = {}
 
@@ -76,24 +66,22 @@ class VGG(chainer.Chain):
 
     """
 
-    def __init__(self, class_labels=10, xorshift=None, in_channels=None):
+    def __init__(self, class_labels=10, in_channels=None):
         super(VGG, self).__init__()
-        if xorshift:
-            print("USIG XORSHIFT")
         with self.init_scope():
-            self.block1_1 = Block(64, 3, xorshift=xorshift, in_channels=in_channels)
-            self.block1_2 = Block(64, 3, xorshift=xorshift)
-            self.block2_1 = Block(128, 3, xorshift=xorshift)
-            self.block2_2 = Block(128, 3, xorshift=xorshift)
-            self.block3_1 = Block(256, 3, xorshift=xorshift)
-            self.block3_2 = Block(256, 3, xorshift=xorshift)
-            self.block3_3 = Block(256, 3, xorshift=xorshift)
-            self.block4_1 = Block(512, 3, xorshift=xorshift)
-            self.block4_2 = Block(512, 3, xorshift=xorshift)
-            self.block4_3 = Block(512, 3, xorshift=xorshift)
-            self.block5_1 = Block(512, 3, xorshift=xorshift)
-            self.block5_2 = Block(512, 3, xorshift=xorshift)
-            self.block5_3 = Block(512, 3, xorshift=xorshift)
+            self.block1_1 = Block(64, 3, in_channels=in_channels)
+            self.block1_2 = Block(64, 3)
+            self.block2_1 = Block(128, 3)
+            self.block2_2 = Block(128, 3)
+            self.block3_1 = Block(256, 3)
+            self.block3_2 = Block(256, 3)
+            self.block3_3 = Block(256, 3)
+            self.block4_1 = Block(512, 3)
+            self.block4_2 = Block(512, 3)
+            self.block4_3 = Block(512, 3)
+            self.block5_1 = Block(512, 3)
+            self.block5_2 = Block(512, 3)
+            self.block5_3 = Block(512, 3)
             self.fc1 = L.Linear(None, 512, nobias=True, initialW=None)
             self.bn_fc1 = L.BatchNormalization(512, eps=1e-3)
             self.fc2 = L.Linear(None, class_labels, nobias=True, initialW=None)
