@@ -6,7 +6,7 @@ import argparse
 import os
 import subprocess
 
-CMD = '/usr/bin/rsync -p'
+CMD = '/usr/bin/rsync -p --relative'
 TARGETS = ['l2_{}.npz', 'param_hist_{}.npz']
 
 p = argparse.ArgumentParser()
@@ -22,7 +22,7 @@ for d in args.data:
     for i in range(0, args.iteration, 100):
         for t in TARGETS:
             src = os.path.join(d, t.format(i))
-            dest = args.dir + t.format(i)
+            dest = args.dir
             transfers.append([src, dest])
 for t in transfers:
     cmd_to_run = args.upload_cmd.split(' ') + t
