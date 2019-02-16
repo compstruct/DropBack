@@ -239,8 +239,8 @@ if __name__ == '__main__':
     elif args.model == 'vgg':
         net = vgg.VGG(10)
     if args.use_vd:
-        #net = vgg_vd.VGG16VD(10, warm_up=0.0001)
-        net.__class__.__bases__ = (vgg_vd.VariationalDropoutChain,) + net.__class__.__bases__
+        net = vgg_vd.VGG16VD(10, warm_up=0.0001)
+        #net.__class__.__bases__ = (vgg_vd.VariationalDropoutChain,) + net.__class__.__bases__
         net(train[0][0][None,])  # for setting in_channels automatically
         net.to_variational_dropout()
     if args.gpu > 0:
