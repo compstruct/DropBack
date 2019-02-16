@@ -148,7 +148,7 @@ def run_training(
     trainer.extend(extensions.LogReport())
     trainer.extend(extensions.observe_lr())
     if tracked == 0 and use_pruning:
-        masks = pruning.create_model_mask(net, args.pruning)
+        masks = pruning.create_model_mask(net, use_pruning)
         trainer.extend(pruning.pruned(net, masks))
     trainer.extend(extensions.Evaluator(
         test_iter, net, device=devices), name='val')
