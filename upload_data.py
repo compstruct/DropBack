@@ -23,7 +23,7 @@ for d in args.data:
         for t in TARGETS:
             src = os.path.join(d, t.format(i))
             dest = args.dir + t.format(i)
-            transfers.append((src, dest))
+            transfers.append([src, dest])
 for t in transfers:
     cmd_to_run = args.upload_cmd.split(' ') + t
     subprocess.run(cmd_to_run)
