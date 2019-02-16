@@ -4,6 +4,7 @@ Uses drive linux/ anythgin to upload results to a specified dir
 
 import argparse
 import os
+import multiprocessing
 import subprocess
 
 CMD = '/usr/bin/rsync -p --relative'
@@ -24,6 +25,11 @@ for d in args.data:
             src = os.path.join(d, t.format(i))
             dest = args.dir
             transfers.append([src, dest])
+
+pool = multiprocessing.Pool(20)
+
+cmds = []
 for t in transfers:
-    cmd_to_run = args.upload_cmd.split(' ') + t
-    subprocess.run(cmd_to_run)
+    cmds.append(args.upload_cmd.split(' ') + t)
+
+pool.map(subprocess.run, cmds)
