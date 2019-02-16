@@ -199,7 +199,7 @@ if __name__ == '__main__':
     parser.add_argument('--lr_decay_epoch', type=float, default=30)
     parser.add_argument('--weight_decay', type=float, default=0.0005)
     parser.add_argument('--model', default='vgg', choices=['vgg', 'wrn', 'densenet', 'vgg_vd'])
-    parser.add_argument('--use_pruning', default=False, action='store_true')
+    parser.add_argument('--use_pruning', default=0, type=float)
     parser.add_argument('--use_vd', default=False, action='store_true')
     parser.add_argument('--momentum', default=False, action='store_true')
     parser.add_argument('--decay_init', default=False, action='store_true')
