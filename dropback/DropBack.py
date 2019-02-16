@@ -64,6 +64,7 @@ class DropBack(chainer.training.StandardUpdater):
         :return:
         """
         xp = self.xp
+        super(DropBack, self).update()
         if self.first_iter:
             self.first_iter = False
             self.params = [i for i in self.opt.target.params()]
@@ -75,7 +76,6 @@ class DropBack(chainer.training.StandardUpdater):
                     self.init_params)
             if self.tracked_size:
                 self.frozen_masks = [None] * len(self.params)
-        super(DropBack, self).update()
 
         if self.decay_init and not self.first_iter:
             for i, _ in enumerate(self.init_params):
