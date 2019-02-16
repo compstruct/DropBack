@@ -26,7 +26,7 @@ for d in args.data:
             dest = args.dir
             transfers.append([src, dest])
 
-pool = multiprocessing.Pool(20)
+pool = multiprocessing.Pool(1)
 
 cmds = []
 for t in transfers:

@@ -198,8 +198,9 @@ if __name__ == '__main__':
     parser.add_argument('--lr_decay_rate', type=float, default=0.8)
     parser.add_argument('--lr_decay_epoch', type=float, default=30)
     parser.add_argument('--weight_decay', type=float, default=0.0005)
-    parser.add_argument('--model', default='vgg', choices=['vgg', 'wrn', 'densenet', 'vgg_vd'])
+    parser.add_argument('--model', default='vgg', choices=['vgg', 'wrn', 'densenet'])
     parser.add_argument('--use_pruning', default=False, action='store_true')
+    parser.add_argument('--use_vd', default=False, action='store_true')
     parser.add_argument('--momentum', default=False, action='store_true')
     parser.add_argument('--decay_init', default=False, action='store_true')
     parser.add_argument('--delay_lr', default=False, action='store_true')
@@ -237,8 +238,9 @@ if __name__ == '__main__':
         net = densenet.DenseNet(10)
     elif args.model == 'vgg':
         net = vgg.VGG(10)
-    elif args.model == 'vd':
-        net = vgg_vd.VGG16VD(10, warm_up=0.0001)
+    if args.use_vd:
+        #net = vgg_vd.VGG16VD(10, warm_up=0.0001)
+        net.__bases__ = net.__bases__ + (vgg_vd.VariationalDropoutChain,)
         net(train[0][0][None,])  # for setting in_channels automatically
         net.to_variational_dropout()
     if args.gpu > 0:
