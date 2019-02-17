@@ -1,3 +1,0 @@
-[submodule "pruning_chainer"]
-	path = pruning_chainer
-	url = https://github.com/tosaka2/pruning_chainer.git
