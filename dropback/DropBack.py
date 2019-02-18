@@ -49,7 +49,7 @@ class DropBack(chainer.training.StandardUpdater):
         self.frozen_masks = [None]
         self.decay_init = decay_init
         self.track = True
-        self.xp = cuda.get_array_module(next(self.opt.target.params()))
+        #self.xp = cuda.get_array_module(next(self.opt.target.params()))
 
     def update(self):
         """
@@ -63,7 +63,7 @@ class DropBack(chainer.training.StandardUpdater):
         algorithm.
         :return:
         """
-        xp = self.xp
+        xp = chainer.backend.get_array_module()
         super(DropBack, self).update()
         if self.first_iter:
             self.first_iter = False
