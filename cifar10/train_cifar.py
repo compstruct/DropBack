@@ -239,7 +239,7 @@ if __name__ == '__main__':
         #net.__class__.__bases__ = (vgg_vd.VariationalDropoutChain,) + net.__class__.__bases__
         net(train[0][0][None,])  # for setting in_channels automatically
         net.to_variational_dropout()
-    if args.gpu > 0:
+    if args.gpu >= 0:
         # Enable autotuner of cuDNN
         #chainer.config.autotune = True
         chainer.cuda.get_device_from_id(args.gpu).use()  # Make the GPU current
