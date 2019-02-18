@@ -242,9 +242,9 @@ if __name__ == '__main__':
     if args.gpu > 0:
         # Enable autotuner of cuDNN
         #chainer.config.autotune = True
-        #chainer.cuda.cupy.random.seed(args.seed)
         chainer.cuda.get_device_from_id(args.gpu).use()  # Make the GPU current
         net.to_gpu()
+        chainer.cuda.cupy.random.seed(args.seed)
 
     if args.transform:
         mean = np.mean([x for x, _ in train], axis=(0, 2, 3))
