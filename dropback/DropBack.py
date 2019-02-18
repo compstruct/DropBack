@@ -63,7 +63,7 @@ class DropBack(chainer.training.StandardUpdater):
         algorithm.
         :return:
         """
-        xp = chainer.backend.get_array_module()
+        xp = cuda.get_array_module(next(self.opt.target.params()))
         super(DropBack, self).update()
         if self.first_iter:
             self.first_iter = False
