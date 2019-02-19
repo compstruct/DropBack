@@ -246,9 +246,11 @@ if __name__ == '__main__':
         import cupy as cp
         x = cp.random.randn(1, 3, 32, 32).astype(cp.float32)
         net(x)
-    serializers.save_npz(os.path.join(rdir, 'cifar10_init.model'), net)
+
     if args.load:
         serializers.load_npz(args.load, net)
+    else:
+        serializers.save_npz(os.path.join(rdir, 'cifar10_init.model'), net)
 
     if args.transform:
         mean = np.mean([x for x, _ in train], axis=(0, 2, 3))
