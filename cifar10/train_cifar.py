@@ -243,7 +243,9 @@ if __name__ == '__main__':
         net.to_variational_dropout()
     if args.gpu >= 0:
         net.to_gpu()
-
+        import cupy as cp
+        x = cp.random.randn(1, 3, 32, 32).astype(cp.float32)
+        net(x)
     try:
         serializers.save_npz(os.path.join(rdir, 'cifar10_init.model'), net)
     except Exception as e:
