@@ -202,6 +202,7 @@ if __name__ == '__main__':
     parser.add_argument('--delay_lr', default=False, action='store_true')
     parser.add_argument('--tracked', type=int, default=0)
     parser.add_argument('--freeze', default=0, type=int)
+    parser.add_argument('--load', default='')
 
     # Data augmentation settings
     parser.add_argument('--random_angle', type=float, default=15.0)
@@ -229,18 +230,10 @@ if __name__ == '__main__':
     np.random.seed(args.seed)
 
     train, valid = cifar.get_cifar10(scale=255.)
-
     if args.model == 'wrn':
         net = wrn.WideResNet(widen_factor=10, depth=28, n_classes=10)
     elif args.model == 'densenet':
         net = densenet.DenseNet(10)
-        net2 = densenet.DenseNet(10)
-        net.to_gpu()
-        net2.to_gpu()
-        import cupy as cp
-        x = cp.random.randn(1, 3, 32, 32).astype(cp.float32)
-        y = net(x)
-        y2 = net2(x)
     elif args.model == 'vgg':
         net = vgg.VGG(10)
     elif args.model == 'vgg_vd':
@@ -251,6 +244,12 @@ if __name__ == '__main__':
     if args.gpu >= 0:
         net.to_gpu()
 
+    try:
+        serializers.save_npz(os.path.join(rdir, 'cifar10_init.model'), net)
+    except Exception as e:
+        print(e)
+    if args.load:
+        serializers.load_npz(args.load, net)
 
     if args.transform:
         mean = np.mean([x for x, _ in train], axis=(0, 2, 3))

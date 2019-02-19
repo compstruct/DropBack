@@ -63,7 +63,6 @@ class DropBack(chainer.training.StandardUpdater):
         algorithm.
         :return:
         """
-        super(DropBack, self).update()
         xp = cuda.get_array_module(next(self.opt.target.params()).data)
         if self.first_iter:
             self.first_iter = False
@@ -76,7 +75,7 @@ class DropBack(chainer.training.StandardUpdater):
                     self.init_params)
             if self.tracked_size:
                 self.frozen_masks = [None] * len(self.params)
-
+        super(DropBack, self).update()
         if self.decay_init and not self.first_iter:
             for i, _ in enumerate(self.init_params):
                 self.init_params[i] = self.init_params[i]*.90
