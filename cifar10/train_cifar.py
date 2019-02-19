@@ -211,6 +211,9 @@ if __name__ == '__main__':
     parser.add_argument('--transform', default=False, action='store_true')
 
     args = parser.parse_args()
+    if args.gpu >= 0:
+        chainer.cuda.get_device_from_id(args.gpu).use()
+        chainer.cuda.cupy.random.seed(args.seed)
     rdir = f'{args.model}_{si_prefix.si_format(args.tracked, format_str="{value}{prefix}").strip()}'
     if args.extra:
         rdir += f'_{args.extra}'
@@ -227,11 +230,17 @@ if __name__ == '__main__':
 
     train, valid = cifar.get_cifar10(scale=255.)
 
-
     if args.model == 'wrn':
         net = wrn.WideResNet(widen_factor=10, depth=28, n_classes=10)
     elif args.model == 'densenet':
         net = densenet.DenseNet(10)
+        net2 = densenet.DenseNet(10)
+        net.to_gpu()
+        net2.to_gpu()
+        import cupy as cp
+        x = cp.random.randn(1, 3, 32, 32).astype(cp.float32)
+        y = net(x)
+        y2 = net2(x)
     elif args.model == 'vgg':
         net = vgg.VGG(10)
     elif args.model == 'vgg_vd':
@@ -240,11 +249,8 @@ if __name__ == '__main__':
         net(train[0][0][None,])  # for setting in_channels automatically
         net.to_variational_dropout()
     if args.gpu >= 0:
-        # Enable autotuner of cuDNN
-        #chainer.config.autotune = True
-        chainer.cuda.get_device_from_id(args.gpu).use()  # Make the GPU current
         net.to_gpu()
-        chainer.cuda.cupy.random.seed(args.seed)
+
 
     if args.transform:
         mean = np.mean([x for x, _ in train], axis=(0, 2, 3))
