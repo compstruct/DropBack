@@ -243,7 +243,9 @@ if __name__ == '__main__':
         net.to_gpu()
         import cupy as cp
         x = cp.random.randn(1, 3, 32, 32).astype(cp.float32)
+        chainer.config.train = False
         net(x)
+        chainer.config.train = True
 
     if args.load:
         serializers.load_npz(args.load, net)
