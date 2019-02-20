@@ -243,6 +243,11 @@ if __name__ == '__main__':
         serializers.load_npz(args.load, net)
     else:
         serializers.save_npz(os.path.join(rdir, 'cifar10_init.model'), net)
+
+    if args.model == 'vgg_vd':
+        net(train[0][0][None,])  # for setting in_channels automatically
+        net.to_variational_dropout()
+
     if args.gpu >= 0:
         net.to_gpu()
         import cupy as cp
@@ -251,9 +256,7 @@ if __name__ == '__main__':
         net(x)
         chainer.config.train = True
 
-    if args.model == 'vgg_vd':
-        net(train[0][0][None,])  # for setting in_channels automatically
-        net.to_variational_dropout()
+
     if args.transform:
         mean = np.mean([x for x, _ in train], axis=(0, 2, 3))
         std = np.std([x for x, _ in train], axis=(0, 2, 3))
