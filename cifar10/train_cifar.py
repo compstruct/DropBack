@@ -239,6 +239,10 @@ if __name__ == '__main__':
     elif args.model == 'vgg_vd':
         net = vgg_vd.VGG16VD(10, warm_up=0.0001)
         #net.__class__.__bases__ = (vgg_vd.VariationalDropoutChain,) + net.__class__.__bases__
+    if args.load:
+        serializers.load_npz(args.load, net)
+    else:
+        serializers.save_npz(os.path.join(rdir, 'cifar10_init.model'), net)
     if args.gpu >= 0:
         net.to_gpu()
         import cupy as cp
@@ -247,10 +251,6 @@ if __name__ == '__main__':
         net(x)
         chainer.config.train = True
 
-    if args.load:
-        serializers.load_npz(args.load, net)
-    else:
-        serializers.save_npz(os.path.join(rdir, 'cifar10_init.model'), net)
     if args.model == 'vgg_vd':
         net(train[0][0][None,])  # for setting in_channels automatically
         net.to_variational_dropout()
