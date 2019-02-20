@@ -28,17 +28,16 @@ class Block(chainer.Chain):
 
     def __init__(self, out_channels, ksize, pad=1, xorshift=False, in_channels=None):
         super(Block, self).__init__()
+        w = chainer.initializers.HeNormal()
         with self.init_scope():
             self.conv = L.Convolution2D(in_channels, out_channels, ksize, pad=pad,
-                                        nobias=True)
+                                        nobias=True, initialW=w)
             self.bn = L.BatchNormalization(out_channels, eps=1e-3)
-        self.acts = {}
 
     def __call__(self, x):
         h = self.conv(x)
         h = self.bn(h)
         h = F.relu(h)
-        self.acts['relu'] = h
         return h
 
 
@@ -68,6 +67,7 @@ class VGG(chainer.Chain):
 
     def __init__(self, class_labels=10, in_channels=None):
         super(VGG, self).__init__()
+        w = chainer.initializers.HeNormal()
         with self.init_scope():
             self.block1_1 = Block(64, 3, in_channels=in_channels)
             self.block1_2 = Block(64, 3)
@@ -82,9 +82,9 @@ class VGG(chainer.Chain):
             self.block5_1 = Block(512, 3)
             self.block5_2 = Block(512, 3)
             self.block5_3 = Block(512, 3)
-            self.fc1 = L.Linear(None, 512, nobias=True, initialW=None)
+            self.fc1 = L.Linear(None, 512, nobias=True, initialW=w)
             self.bn_fc1 = L.BatchNormalization(512, eps=1e-3)
-            self.fc2 = L.Linear(None, class_labels, nobias=True, initialW=None)
+            self.fc2 = L.Linear(None, class_labels, nobias=True, initialW=w)
 
     def __call__(self, x):
         # 64 channel blocks:
