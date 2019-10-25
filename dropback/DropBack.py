@@ -7,10 +7,12 @@ Author: Maximilian Golub
 """
 
 import chainer
-from chainer import cuda
-
 import time
 import os
+if chainer.backends.cuda.available:
+    import cupy as xp
+else:
+    import numpy as xp
 
 
 class DropBack(chainer.training.StandardUpdater):
@@ -49,7 +51,6 @@ class DropBack(chainer.training.StandardUpdater):
         self.frozen_masks = [None]
         self.decay_init = decay_init
         self.track = True
-        #self.xp = cuda.get_array_module(next(self.opt.target.params()))
 
     def update(self):
         """
@@ -63,7 +64,6 @@ class DropBack(chainer.training.StandardUpdater):
         algorithm.
         :return:
         """
-        xp = cuda.get_array_module(next(self.opt.target.params()).data)
         if self.first_iter:
             self.first_iter = False
             self.params = [i for i in self.opt.target.params()]
@@ -89,7 +89,7 @@ class DropBack(chainer.training.StandardUpdater):
                         values = (xp.abs(param.data - self.init_params[i]).flatten()).copy()
                     abs_values.append(values)
                 abs_vals = xp.concatenate(abs_values)
-                thresh = xp.sort(abs_vals)[-self.tracked_size]
+                thresh = xp.partition(abs_vals, self.tracked_size)[-self.tracked_size]
             for i, param in enumerate(self.params):
                 if param.name == 'b':
                     if self.freeze:
@@ -104,7 +104,7 @@ class DropBack(chainer.training.StandardUpdater):
                         mask = xp.abs(param.data - self.init_params[i]) > thresh
                     param.data = mask*param.data + self.init_params[i]*~mask
                 self.frozen_masks[i] = mask
-            if self.iteration == 3465 and self.device >= 0:
+            if self.iteration == 3465:
                 print("Checking inv...")
                 total_sum = sum([xp.count_nonzero(p.data != self.init_params[i]) for i, p in enumerate(self.params)])
                 print("********\n\n Total non zero is: {}\n\n1*********".format(total_sum))

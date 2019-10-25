@@ -31,11 +31,8 @@ from chainer import serializers
 import si_prefix
 import json
 
-from cifar10 import densenet
-from cifar10 import wrn
-from cifar10 import vgg
-from cifar10 import vgg_vd
-from pruning_chainer import pruning
+import densenet
+import vgg
 
 import sys
 parentPath = os.path.abspath("..")
@@ -49,6 +46,7 @@ try:
     USE_OPENCV = True
 except ImportError:
     USE_OPENCV = False
+    raise ImportError
 
 
 def cv_rotate(img, angle):
@@ -206,7 +204,7 @@ if __name__ == '__main__':
 
     # Data augmentation settings
     parser.add_argument('--random_angle', type=float, default=15.0)
-    parser.add_argument('--pca_sigma', type=float, default=25.5)
+    parser.add_argument('--pca_sigma', type=float, default=0.5)
     parser.add_argument('--expand_ratio', type=float, default=1.2)
     parser.add_argument('--crop_size', type=int, nargs='*', default=[28, 28])
     parser.add_argument('--transform', default=False, action='store_true')
